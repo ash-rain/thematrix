@@ -1,0 +1,138 @@
+/* Matrix Terminal Theme */
+
+@theme {
+    --font-mono: 'Fira Code', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+    --color-matrix: #00ff41;
+    --color-matrix-dim: #008f11;
+    --color-matrix-dark: #003b00;
+    --color-matrix-glow: #00ff4180;
+    --color-matrix-bg: #0a0a0a;
+    --color-matrix-surface: #0d1a0d;
+    --color-matrix-danger: #ff0040;
+    --color-matrix-warning: #ffaa00;
+}
+
+/* Matrix text glow */
+.matrix-glow {
+    text-shadow: 0 0 8px var(--color-matrix-glow), 0 0 20px var(--color-matrix-glow);
+}
+
+.matrix-glow-sm {
+    text-shadow: 0 0 4px var(--color-matrix-glow);
+}
+
+/* Matrix box glow */
+.matrix-box-glow {
+    box-shadow: 0 0 10px var(--color-matrix-glow), inset 0 0 10px rgba(0, 255, 65, 0.05);
+}
+
+.matrix-box-glow-hover:hover {
+    box-shadow: 0 0 20px var(--color-matrix-glow), 0 0 40px rgba(0, 255, 65, 0.15), inset 0 0 15px rgba(0, 255, 65, 0.1);
+}
+
+/* Typing cursor animation */
+@keyframes blink-cursor {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+.matrix-cursor::after {
+    content: '\2588';
+    animation: blink-cursor 1s step-end infinite;
+}
+
+/* Screen flicker */
+@keyframes flicker {
+    0% { opacity: 0.97; }
+    5% { opacity: 0.95; }
+    10% { opacity: 0.97; }
+    15% { opacity: 0.94; }
+    20% { opacity: 0.98; }
+    50% { opacity: 0.95; }
+    80% { opacity: 0.96; }
+    90% { opacity: 0.94; }
+    100% { opacity: 0.98; }
+}
+
+.matrix-flicker {
+    animation: flicker 8s infinite;
+}
+
+/* Matrix rain animation */
+@keyframes matrix-rain {
+    0% { transform: translateY(-100%); opacity: 1; }
+    80% { opacity: 0.6; }
+    100% { transform: translateY(100vh); opacity: 0; }
+}
+
+.matrix-rain-column {
+    animation: matrix-rain linear infinite;
+    font-size: 14px;
+    line-height: 1.2;
+    color: var(--color-matrix);
+    opacity: 0.15;
+    writing-mode: vertical-lr;
+    text-orientation: upright;
+    user-select: none;
+    white-space: nowrap;
+}
+
+/* Glitch effect for game over */
+@keyframes glitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-3px, 3px); }
+    40% { transform: translate(-3px, -3px); }
+    60% { transform: translate(3px, 3px); }
+    80% { transform: translate(3px, -3px); }
+    100% { transform: translate(0); }
+}
+
+@keyframes glitch-skew {
+    0% { transform: skew(0deg); }
+    20% { transform: skew(-2deg); }
+    40% { transform: skew(2deg); }
+    60% { transform: skew(-1deg); }
+    80% { transform: skew(1deg); }
+    100% { transform: skew(0deg); }
+}
+
+.matrix-glitch {
+    animation: glitch 0.3s infinite, glitch-skew 0.5s infinite;
+}
+
+/* Fade in for narrative */
+@keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.matrix-fade-in {
+    animation: fade-in-up 0.6s ease-out forwards;
+}
+
+/* Pulse glow for selected items */
+@keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 10px var(--color-matrix-glow); }
+    50% { box-shadow: 0 0 25px var(--color-matrix-glow), 0 0 50px rgba(0, 255, 65, 0.2); }
+}
+
+.matrix-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Health bar segments */
+.matrix-health-bar {
+    background: linear-gradient(90deg,
+        var(--color-matrix-danger) 0%,
+        var(--color-matrix-warning) 40%,
+        var(--color-matrix) 70%,
+        var(--color-matrix) 100%
+    );
+    mask-image: repeating-linear-gradient(
+        90deg,
+        #fff 0px,
+        #fff 8px,
+        transparent 8px,
+        transparent 10px
+    );
+}

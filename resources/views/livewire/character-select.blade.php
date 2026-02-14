@@ -44,6 +44,15 @@
             </p>
         </div>
 
+        {{-- Error Message --}}
+        @if ($errorMessage)
+            <div class="mx-auto mb-8 max-w-2xl rounded border border-matrix-danger/50 bg-matrix-danger/5 p-4 text-center">
+                <p class="text-sm tracking-wider text-matrix-danger">
+                    > {{ $errorMessage }}
+                </p>
+            </div>
+        @endif
+
         {{-- Character Grid --}}
         <div class="mx-auto grid max-w-3xl grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
             @foreach ($characters as $character)

@@ -29,7 +29,6 @@ class GameFactory extends Factory
             'conversation_id' => null,
             'status' => GameStatus::Active,
             'turn_count' => 0,
-            'scene_image_path' => null,
         ];
     }
 

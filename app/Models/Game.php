@@ -21,7 +21,6 @@ class Game extends Model
         'conversation_id',
         'status',
         'turn_count',
-        'scene_image_path',
     ];
 
     /**

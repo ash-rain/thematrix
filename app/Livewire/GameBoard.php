@@ -4,7 +4,8 @@ namespace App\Livewire;
 
 use App\Ai\Agents\MatrixGameAgent;
 use App\Enums\Character;
-use Laravel\Ai\Image;
+use Laravel\Ai\Exceptions\AiException;
+use Laravel\Ai\Exceptions\RateLimitedException;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -23,11 +24,11 @@ class GameBoard extends Component
 
     public array $choices = [];
 
-    public ?string $sceneImage = null;
-
     public bool $isLoading = false;
 
     public bool $gameOver = false;
+
+    public ?string $errorMessage = null;
 
     public function mount(): void
     {
@@ -43,7 +44,6 @@ class GameBoard extends Component
         $this->turnCount = session('game_turn_count', 0);
         $this->health = session('game_health', 100);
         $this->inventory = session('game_inventory', []);
-        $this->sceneImage = session('game_scene_image_path');
         $this->gameOver = session('game_status') === 'game_over' || $this->health <= 0;
 
         if ($this->turnCount === 1 && session()->has('game_conversation_id')) {
@@ -75,10 +75,23 @@ class GameBoard extends Component
             turnCount: $this->turnCount,
         );
 
-        $response = $agent
-            ->continue(session('game_conversation_id'), as: $sessionUser)
-            ->prompt("The player chose: \"{$choiceText}\"");
+        try {
+            $response = $agent
+                ->continue(session('game_conversation_id'), as: $sessionUser)
+                ->prompt("The player chose: \"{$choiceText}\"");
+        } catch (RateLimitedException) {
+            $this->errorMessage = 'The system is overloaded. Too many operatives in the Matrix. Try again in a moment.';
+            $this->isLoading = false;
 
+            return;
+        } catch (AiException) {
+            $this->errorMessage = 'A glitch in the Matrix. The connection was lost. Try again.';
+            $this->isLoading = false;
+
+            return;
+        }
+
+        $this->errorMessage = null;
         $this->narrative = $response['narrative'];
         $this->health = max(0, min(100, $response['health']));
         $this->inventory = $response['inventory'];
@@ -95,20 +108,7 @@ class GameBoard extends Component
             'game_status' => $newStatus,
         ]);
 
-        Image::of($response['scene_description'].' Digital art, cinematic, The Matrix movie style, green tint, dark cyberpunk noir atmosphere.')
-            ->landscape()
-            ->queue()
-            ->then(function ($image) {
-                $path = $image->storePublicly();
-                session(['game_scene_image_path' => $path]);
-            });
-
         $this->isLoading = false;
-    }
-
-    public function refreshImage(): void
-    {
-        $this->sceneImage = session('game_scene_image_path');
     }
 
     public function newGame(): void
@@ -120,7 +120,6 @@ class GameBoard extends Component
             'game_conversation_id',
             'game_turn_count',
             'game_status',
-            'game_scene_image_path',
         ]);
 
         $this->redirect(route('game.select'), navigate: true);
@@ -138,9 +137,19 @@ class GameBoard extends Component
             turnCount: $this->turnCount,
         );
 
-        $response = $agent
-            ->continue(session('game_conversation_id'), as: $sessionUser)
-            ->prompt('Recap the current scene briefly and present the three choices again.');
+        try {
+            $response = $agent
+                ->continue(session('game_conversation_id'), as: $sessionUser)
+                ->prompt('Recap the current scene briefly and present the three choices again.');
+        } catch (RateLimitedException) {
+            $this->errorMessage = 'The system is overloaded. Too many operatives in the Matrix. Try again in a moment.';
+
+            return;
+        } catch (AiException) {
+            $this->errorMessage = 'A glitch in the Matrix. The connection was lost. Try again.';
+
+            return;
+        }
 
         $this->narrative = $response['narrative'];
         $this->health = $response['health'];

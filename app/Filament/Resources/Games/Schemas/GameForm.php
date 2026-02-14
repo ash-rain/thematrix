@@ -4,7 +4,6 @@ namespace App\Filament\Resources\Games\Schemas;
 
 use App\Enums\Character;
 use App\Enums\GameStatus;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -39,8 +38,6 @@ class GameForm
                     ->required()
                     ->numeric()
                     ->default(0),
-                FileUpload::make('scene_image_path')
-                    ->image(),
             ]);
     }
 }

@@ -2,7 +2,7 @@
 
 use App\Ai\Agents\MatrixGameAgent;
 use App\Enums\Character;
-use Laravel\Ai\Image;
+use Laravel\Ai\Exceptions\RateLimitedException;
 
 test('guests can view character select page', function () {
     $this->get(route('game.select'))
@@ -21,7 +21,6 @@ test('character select page displays all five characters', function () {
 
 test('user can start a game with a valid character', function () {
     MatrixGameAgent::fake();
-    Image::fake();
 
     Livewire\Livewire::test(\App\Livewire\CharacterSelect::class)
         ->call('selectCharacter', 'neo')
@@ -40,6 +39,19 @@ test('user can start a game with a valid character', function () {
 test('user cannot start a game without selecting a character', function () {
     Livewire\Livewire::test(\App\Livewire\CharacterSelect::class)
         ->call('startGame');
+
+    expect(session()->has('game_character'))->toBeFalse();
+});
+
+test('rate limit error during game start sets error message', function () {
+    MatrixGameAgent::fake(fn () => throw RateLimitedException::forProvider('ollama'));
+
+    Livewire\Livewire::test(\App\Livewire\CharacterSelect::class)
+        ->call('selectCharacter', 'neo')
+        ->call('startGame')
+        ->assertSet('errorMessage', 'The system is overloaded. Too many operatives in the Matrix. Try again in a moment.')
+        ->assertSet('isStarting', false)
+        ->assertNoRedirect();
 
     expect(session()->has('game_character'))->toBeFalse();
 });

@@ -19,8 +19,8 @@ use Laravel\Ai\Contracts\Tool;
 use Laravel\Ai\Promptable;
 use Stringable;
 
-#[Provider('ollama')]
-#[Model('minimax-m2.5:cloud')]
+#[Provider('gemini')]
+#[Model('gemini-3-flash-preview')]
 #[Temperature(0.8)]
 #[MaxTokens(2048)]
 class MatrixGameAgent implements Agent, Conversational, HasStructuredOutput, HasTools
@@ -56,7 +56,6 @@ class MatrixGameAgent implements Agent, Conversational, HasStructuredOutput, Has
         - Choices should be meaningfully different: one cautious/safe, one bold/aggressive, one creative/unconventional.
         - If health reaches 0, the game ends. Deliver a dramatic death scene. Set game_over to true.
         - Keep the narrative vivid but concise: 2-3 paragraphs maximum.
-        - Generate a SCENE DESCRIPTION for image generation: a concise, visual, cinematic prompt describing the current scene in the style of The Matrix (green tint, dark atmosphere, cyberpunk noir, dramatic lighting, rain-slicked streets).
         - Use the dice_roll tool for skill checks and random events.
         - Use the combat_calculator tool during fights to determine damage.
 
@@ -74,7 +73,6 @@ class MatrixGameAgent implements Agent, Conversational, HasStructuredOutput, Has
             "health": 100,
             "inventory": ["array", "of", "item", "strings"],
             "choices": ["exactly three", "choice strings", "for the player"],
-            "scene_description": "string - a visual prompt for image generation",
             "game_over": false
         }
         PROMPT;
@@ -98,7 +96,6 @@ class MatrixGameAgent implements Agent, Conversational, HasStructuredOutput, Has
             'health' => $schema->integer()->required(),
             'inventory' => $schema->array()->items($schema->string())->required(),
             'choices' => $schema->array()->items($schema->string())->min(3)->max(3)->required(),
-            'scene_description' => $schema->string()->required(),
             'game_over' => $schema->boolean()->required(),
         ];
     }

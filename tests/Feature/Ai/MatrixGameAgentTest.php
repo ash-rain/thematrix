@@ -3,7 +3,6 @@
 use App\Ai\Agents\MatrixGameAgent;
 use App\Enums\Character;
 use App\Models\User;
-use Laravel\Ai\Image;
 
 test('agent returns structured output when faked', function () {
     MatrixGameAgent::fake();
@@ -25,7 +24,6 @@ test('agent returns structured output when faked', function () {
     expect($response['health'])->toBeInt();
     expect($response['inventory'])->toBeArray();
     expect($response['choices'])->toBeArray();
-    expect($response['scene_description'])->toBeString();
     expect($response['game_over'])->toBeBool();
 
     MatrixGameAgent::assertPrompted(fn ($prompt) => str_contains($prompt->prompt, 'Begin the adventure'));
@@ -46,14 +44,4 @@ test('agent includes character info in instructions', function () {
     expect($instructions)->toContain('Health: 75/100');
     expect($instructions)->toContain('red pill, blue pill');
     expect($instructions)->toContain('Turn: 5');
-});
-
-test('image generation can be faked', function () {
-    Image::fake();
-
-    Image::of('A dark corridor in the Matrix, green tint')
-        ->landscape()
-        ->queue();
-
-    Image::assertQueued(fn ($prompt) => str_contains($prompt->prompt, 'Matrix'));
 });

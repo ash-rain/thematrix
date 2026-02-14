@@ -1,4 +1,4 @@
-<div class="flex min-h-screen flex-col matrix-flicker" wire:poll.15s="refreshImage">
+<div class="flex min-h-screen flex-col matrix-flicker">
     {{-- Top Bar --}}
     <header class="flex items-center justify-between border-b border-matrix-dark px-4 py-3 sm:px-6">
         <div class="flex items-center gap-4">
@@ -27,27 +27,8 @@
 
     {{-- Main Content --}}
     <main class="flex flex-1 flex-col lg:flex-row">
-        {{-- Left Column: Scene Image + Inventory --}}
+        {{-- Left Column: Inventory --}}
         <div class="flex flex-col border-b border-matrix-dark lg:w-2/5 lg:border-b-0 lg:border-r">
-            {{-- Scene Image --}}
-            <div class="relative aspect-video w-full overflow-hidden bg-matrix-bg">
-                @if ($sceneImage)
-                    <img
-                        src="{{ Storage::url($sceneImage) }}"
-                        alt="Scene"
-                        class="h-full w-full object-cover opacity-80"
-                    />
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                @else
-                    <div class="flex h-full items-center justify-center">
-                        <div class="text-center">
-                            <div class="matrix-glow mb-2 text-2xl text-matrix/30">&#9608;&#9608;&#9608;</div>
-                            <p class="text-xs tracking-wider text-matrix-dim/50">RENDERING SCENE...</p>
-                        </div>
-                    </div>
-                @endif
-            </div>
-
             {{-- Inventory --}}
             <div class="flex-1 p-4">
                 <h3 class="mb-3 text-xs font-bold tracking-[0.2em] text-matrix-dim">
@@ -72,6 +53,15 @@
 
         {{-- Right Column: Narrative + Choices --}}
         <div class="flex flex-1 flex-col lg:w-3/5">
+            {{-- Error Message --}}
+            @if ($errorMessage)
+                <div class="mx-4 mt-4 rounded border border-matrix-danger/50 bg-matrix-danger/5 p-4 sm:mx-6 sm:mt-6">
+                    <p class="text-sm tracking-wider text-matrix-danger">
+                        > {{ $errorMessage }}
+                    </p>
+                </div>
+            @endif
+
             {{-- Narrative --}}
             <div class="flex-1 overflow-y-auto p-4 sm:p-6">
                 @if ($gameOver)

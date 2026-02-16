@@ -14,7 +14,7 @@ return [
     */
 
     'default' => env('AI_PROVIDER', 'ollama'),
-    'default_for_images' => 'gemini',
+    'default_for_images' => 'openai',
     'default_for_audio' => 'openai',
     'default_for_transcription' => 'openai',
     'default_for_embeddings' => 'openai',
@@ -111,6 +111,11 @@ return [
         ],
 
         'openrouter' => [
+            'driver' => 'openrouter',
+            'key' => env('OPENROUTER_API_KEY'),
+        ],
+
+        'openrouter_images' => [
             'driver' => 'openrouter',
             'key' => env('OPENROUTER_API_KEY'),
         ],

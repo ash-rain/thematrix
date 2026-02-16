@@ -2,6 +2,10 @@
 
 use App\Ai\Agents\MatrixGameAgent;
 use App\Enums\Character;
+use App\Enums\GameStatus;
+use App\Jobs\GenerateSceneImage;
+use App\Livewire\CharacterSelect;
+use Illuminate\Support\Facades\Queue;
 use Laravel\Ai\Exceptions\RateLimitedException;
 
 test('guests can view character select page', function () {
@@ -21,23 +25,26 @@ test('character select page displays all five characters', function () {
 
 test('user can start a game with a valid character', function () {
     MatrixGameAgent::fake();
+    Queue::fake(GenerateSceneImage::class);
 
-    Livewire\Livewire::test(\App\Livewire\CharacterSelect::class)
+    Livewire\Livewire::test(CharacterSelect::class)
         ->call('selectCharacter', 'neo')
         ->assertSet('selectedCharacter', 'neo')
         ->call('startGame')
         ->assertRedirect(route('game.play'));
 
-    expect(session('game_character'))->toBe('neo');
-    expect(session('game_health'))->toBeInt();
-    expect(session('game_status'))->toBe('active');
-    expect(session('game_turn_count'))->toBe(1);
+    expect(session('game_character'))->toBe('neo')
+        ->and(session('game_health'))->toBeInt()
+        ->and(session('game_status'))->toBe(GameStatus::Active->value)
+        ->and(session('game_turn_count'))->toBe(1);
 
     MatrixGameAgent::assertPrompted(fn ($prompt) => str_contains($prompt->prompt, 'Neo'));
+
+    Queue::assertPushed(GenerateSceneImage::class);
 });
 
 test('user cannot start a game without selecting a character', function () {
-    Livewire\Livewire::test(\App\Livewire\CharacterSelect::class)
+    Livewire\Livewire::test(CharacterSelect::class)
         ->call('startGame');
 
     expect(session()->has('game_character'))->toBeFalse();
@@ -46,10 +53,10 @@ test('user cannot start a game without selecting a character', function () {
 test('rate limit error during game start sets error message', function () {
     MatrixGameAgent::fake(fn () => throw RateLimitedException::forProvider('ollama'));
 
-    Livewire\Livewire::test(\App\Livewire\CharacterSelect::class)
+    Livewire\Livewire::test(CharacterSelect::class)
         ->call('selectCharacter', 'neo')
         ->call('startGame')
-        ->assertSet('errorMessage', 'The system is overloaded. Too many operatives in the Matrix. Try again in a moment.')
+        ->assertSet('errorMessage', CharacterSelect::RATE_LIMIT_ERROR)
         ->assertSet('isStarting', false)
         ->assertNoRedirect();
 

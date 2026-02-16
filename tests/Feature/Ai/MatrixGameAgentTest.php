@@ -20,11 +20,12 @@ test('agent returns structured output when faked', function () {
         ->forUser($user)
         ->prompt('Begin the adventure.');
 
-    expect($response['narrative'])->toBeString();
-    expect($response['health'])->toBeInt();
-    expect($response['inventory'])->toBeArray();
-    expect($response['choices'])->toBeArray();
-    expect($response['game_over'])->toBeBool();
+    expect($response['narrative'])->toBeString()
+        ->and($response['scene_description'])->toBeString()
+        ->and($response['health'])->toBeInt()
+        ->and($response['inventory'])->toBeArray()
+        ->and($response['choices'])->toBeArray()
+        ->and($response['game_over'])->toBeBool();
 
     MatrixGameAgent::assertPrompted(fn ($prompt) => str_contains($prompt->prompt, 'Begin the adventure'));
 });
@@ -39,9 +40,10 @@ test('agent includes character info in instructions', function () {
 
     $instructions = $agent->instructions();
 
-    expect($instructions)->toContain('Morpheus');
-    expect($instructions)->toContain('The Guide');
-    expect($instructions)->toContain('Health: 75/100');
-    expect($instructions)->toContain('red pill, blue pill');
-    expect($instructions)->toContain('Turn: 5');
+    expect($instructions)
+        ->toContain('Morpheus')
+        ->toContain('The Guide')
+        ->toContain('Health: 75/100')
+        ->toContain('red pill, blue pill')
+        ->toContain('Turn: 5');
 });

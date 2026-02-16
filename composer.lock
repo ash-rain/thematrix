@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b56d7677af14f999b63b8d4e3a7386e3",
+    "content-hash": "448a99e33052f9a5ca7a1a08f5ec84ad",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -5384,6 +5384,87 @@
             "time": "2025-02-25T09:09:36+00:00"
         },
         {
+            "name": "saloonphp/saloon",
+            "version": "v3.14.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/saloonphp/saloon.git",
+                "reference": "634be16ca5eb0b71ab01533f58dc88d174a2e28b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/saloonphp/saloon/zipball/634be16ca5eb0b71ab01533f58dc88d174a2e28b",
+                "reference": "634be16ca5eb0b71ab01533f58dc88d174a2e28b",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.6",
+                "guzzlehttp/promises": "^1.5 || ^2.0",
+                "guzzlehttp/psr7": "^2.0",
+                "php": "^8.2",
+                "psr/http-factory": "^1.0",
+                "psr/http-message": "^1.1 || ^2.0"
+            },
+            "conflict": {
+                "sammyjo20/saloon": "*"
+            },
+            "require-dev": {
+                "ext-simplexml": "*",
+                "friendsofphp/php-cs-fixer": "^3.5",
+                "illuminate/collections": "^10.0 || ^11.0 || ^12.0",
+                "league/flysystem": "^3.0",
+                "pestphp/pest": "^2.36.0 || ^3.8.2 || ^4.1.4",
+                "phpstan/phpstan": "^2.1.13",
+                "saloonphp/xml-wrangler": "^1.1",
+                "spatie/invade": "^2.1",
+                "symfony/dom-crawler": "^6.0 || ^7.0",
+                "symfony/var-dumper": "^6.3 || ^7.0"
+            },
+            "suggest": {
+                "illuminate/collections": "Required for the response collect() method.",
+                "saloonphp/xml-wrangler": "Required for the response xmlReader() method.",
+                "symfony/dom-crawler": "Required for the response dom() method.",
+                "symfony/var-dumper": "Required for default debugging drivers."
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Saloon\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sam Carré",
+                    "email": "29132017+Sammyjo20@users.noreply.github.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Build beautiful API integrations and SDKs with Saloon",
+            "homepage": "https://github.com/saloonphp/saloon",
+            "keywords": [
+                "api",
+                "api-integrations",
+                "saloon",
+                "sammyjo20",
+                "sdk"
+            ],
+            "support": {
+                "issues": "https://github.com/saloonphp/saloon/issues",
+                "source": "https://github.com/saloonphp/saloon/tree/v3.14.2"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/sammyjo20",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-11-20T21:42:32+00:00"
+        },
+        {
             "name": "scrivo/highlight.php",
             "version": "v9.18.1.10",
             "source": {
@@ -8209,6 +8290,85 @@
                 }
             ],
             "time": "2026-01-01T22:13:48+00:00"
+        },
+        {
+            "name": "taecontrol/openrouter-laravel-sdk",
+            "version": "0.0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/taecontrol/openrouter-laravel-sdk.git",
+                "reference": "1eb6e662694c46c713c0520cb6e9c214eb906198"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/taecontrol/openrouter-laravel-sdk/zipball/1eb6e662694c46c713c0520cb6e9c214eb906198",
+                "reference": "1eb6e662694c46c713c0520cb6e9c214eb906198",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/contracts": "^11.0||^12.0",
+                "php": "^8.4",
+                "saloonphp/saloon": "^3.0",
+                "spatie/laravel-package-tools": "^1.16"
+            },
+            "require-dev": {
+                "larastan/larastan": "^3.0",
+                "laravel/pint": "^1.14",
+                "nunomaduro/collision": "^8.8",
+                "orchestra/canvas": "^10.1.0",
+                "orchestra/testbench": "^10.0.0||^9.0.0",
+                "pestphp/pest": "^4.0",
+                "pestphp/pest-plugin-arch": "^4.0",
+                "pestphp/pest-plugin-laravel": "^4.0",
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan-deprecation-rules": "^2.0",
+                "phpstan/phpstan-phpunit": "^2.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "OpenRouter": "Taecontrol\\OpenRouter\\Facades\\OpenRouter"
+                    },
+                    "providers": [
+                        "Taecontrol\\OpenRouter\\OpenRouterServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Taecontrol\\OpenRouter\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Luis Güette",
+                    "email": "guetteluis@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "An OpenRouter SDK for Laravel",
+            "homepage": "https://github.com/taecontrol/openrouter-laravel-sdk",
+            "keywords": [
+                "laravel",
+                "openrouter-laravel-sdk",
+                "taecontrol"
+            ],
+            "support": {
+                "issues": "https://github.com/taecontrol/openrouter-laravel-sdk/issues",
+                "source": "https://github.com/taecontrol/openrouter-laravel-sdk/tree/0.0.7"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/Taecontrol",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-11-27T15:11:24+00:00"
         },
         {
             "name": "tijsverkoyen/css-to-inline-styles",

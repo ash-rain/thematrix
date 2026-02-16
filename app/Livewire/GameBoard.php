@@ -4,8 +4,10 @@ namespace App\Livewire;
 
 use App\Ai\Agents\MatrixGameAgent;
 use App\Enums\Character;
+use Illuminate\Support\Facades\Cache;
 use Laravel\Ai\Exceptions\AiException;
 use Laravel\Ai\Exceptions\RateLimitedException;
+use App\Jobs\GenerateSceneImage;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -28,6 +30,8 @@ class GameBoard extends Component
 
     public bool $gameOver = false;
 
+    public ?string $sceneImage = null;
+
     public ?string $errorMessage = null;
 
     public function mount(): void
@@ -46,14 +50,25 @@ class GameBoard extends Component
         $this->inventory = session('game_inventory', []);
         $this->gameOver = session('game_status') === 'game_over' || $this->health <= 0;
 
+        $this->sceneImage = Cache::get('game_scene_image:' . session()->getId());
+
         if ($this->turnCount === 1 && session()->has('game_conversation_id')) {
             $this->loadLatestTurn();
         }
     }
 
+    public function refreshImage(): void
+    {
+        $path = Cache::get('game_scene_image:' . session()->getId());
+
+        if ($path) {
+            $this->sceneImage = $path;
+        }
+    }
+
     public function getTitle(): string
     {
-        return $this->characterName.' — The Matrix: Terminal';
+        return $this->characterName . ' — The Matrix: Terminal';
     }
 
     public function makeChoice(int $choiceIndex): void
@@ -99,6 +114,17 @@ class GameBoard extends Component
         $this->gameOver = $response['game_over'] || $this->health <= 0;
         $this->turnCount++;
 
+        $sessionId = session()->getId();
+        Cache::forget("game_scene_image:{$sessionId}");
+        $this->sceneImage = null;
+
+        // Queue image generation with OpenRouter
+        GenerateSceneImage::dispatch(
+            $response['scene_description'] . ' Digital art, cinematic, The Matrix movie style, green tint, dark cyberpunk noir atmosphere.',
+            $sessionId,
+            'black-forest-labs/flux-pro'
+        );
+
         $newStatus = $this->gameOver ? 'game_over' : 'active';
 
         session([
@@ -113,6 +139,8 @@ class GameBoard extends Component
 
     public function newGame(): void
     {
+        Cache::forget('game_scene_image:' . session()->getId());
+
         session()->forget([
             'game_character',
             'game_health',

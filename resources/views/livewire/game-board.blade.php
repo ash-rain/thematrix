@@ -27,8 +27,34 @@
 
     {{-- Main Content --}}
     <main class="flex flex-1 flex-col lg:flex-row">
-        {{-- Left Column: Inventory --}}
+        {{-- Left Column: Scene Image + Inventory --}}
         <div class="flex flex-col border-b border-matrix-dark lg:w-2/5 lg:border-b-0 lg:border-r">
+            {{-- Scene Image --}}
+            <div @if (! $sceneImage) wire:poll.5s="refreshImage" @endif class="relative border-b border-matrix-dark">
+                @if ($sceneImage)
+                    <div class="relative overflow-hidden">
+                        <img
+                            src="{{ Storage::url($sceneImage) }}"
+                            alt="Scene"
+                            class="h-48 w-full object-cover opacity-80 sm:h-56 lg:h-64"
+                        />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                        <div class="absolute inset-0 mix-blend-multiply" style="background: rgba(0, 255, 65, 0.08)"></div>
+                    </div>
+                @else
+                    <div class="flex h-48 items-center justify-center bg-black/50 sm:h-56 lg:h-64">
+                        <div class="text-center">
+                            <div class="mb-2 text-xs tracking-[0.3em] text-matrix-dark">
+                                &#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;
+                            </div>
+                            <p class="matrix-cursor text-xs tracking-wider text-matrix-dim">
+                                RENDERING SCENE...
+                            </p>
+                        </div>
+                    </div>
+                @endif
+            </div>
+
             {{-- Inventory --}}
             <div class="flex-1 p-4">
                 <h3 class="mb-3 text-xs font-bold tracking-[0.2em] text-matrix-dim">

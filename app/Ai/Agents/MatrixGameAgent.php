@@ -19,8 +19,8 @@ use Laravel\Ai\Contracts\Tool;
 use Laravel\Ai\Promptable;
 use Stringable;
 
-#[Provider('gemini')]
-#[Model('gemini-3-flash-preview')]
+#[Provider('openrouter')]
+#[Model('qwen/qwen3-vl-30b-a3b-thinking')]
 #[Temperature(0.8)]
 #[MaxTokens(2048)]
 class MatrixGameAgent implements Agent, Conversational, HasStructuredOutput, HasTools
@@ -59,6 +59,8 @@ class MatrixGameAgent implements Agent, Conversational, HasStructuredOutput, Has
         - Use the dice_roll tool for skill checks and random events.
         - Use the combat_calculator tool during fights to determine damage.
 
+        SCENE DESCRIPTION: Generate a SCENE_DESCRIPTION for image generation: a concise, visual, cinematic prompt describing the current scene in the style of The Matrix (green tint, dark atmosphere, cyberpunk noir, dramatic lighting, rain-slicked streets). Keep it under 50 words.
+
         TONE: Dark, cinematic, philosophical. Channel the mood of the films. Weave in themes of choice, reality, freedom, and identity. Short, punchy sentences mixed with longer reflective ones. Think Wachowski meets Philip K. Dick.
 
         CURRENT STATE:
@@ -70,6 +72,7 @@ class MatrixGameAgent implements Agent, Conversational, HasStructuredOutput, Has
         You MUST respond with ONLY valid JSON (no markdown, no backticks, no text outside the JSON). The JSON must match this exact structure:
         {
             "narrative": "string - the scene description and story text",
+            "scene_description": "string - concise visual prompt for image generation",
             "health": 100,
             "inventory": ["array", "of", "item", "strings"],
             "choices": ["exactly three", "choice strings", "for the player"],
@@ -93,6 +96,7 @@ class MatrixGameAgent implements Agent, Conversational, HasStructuredOutput, Has
     {
         return [
             'narrative' => $schema->string()->required(),
+            'scene_description' => $schema->string()->required(),
             'health' => $schema->integer()->required(),
             'inventory' => $schema->array()->items($schema->string())->required(),
             'choices' => $schema->array()->items($schema->string())->min(3)->max(3)->required(),

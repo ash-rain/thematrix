@@ -4,8 +4,10 @@ namespace App\Livewire;
 
 use App\Ai\Agents\MatrixGameAgent;
 use App\Enums\Character;
+use Illuminate\Support\Facades\Cache;
 use Laravel\Ai\Exceptions\AiException;
 use Laravel\Ai\Exceptions\RateLimitedException;
+use App\Jobs\GenerateSceneImage;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -58,6 +60,15 @@ class CharacterSelect extends Component
 
             return;
         }
+
+        $sessionId = session()->getId();
+
+        // Queue image generation with OpenRouter
+        GenerateSceneImage::dispatch(
+            $response['scene_description'] . ' Digital art, cinematic, The Matrix movie style, green tint, dark cyberpunk noir atmosphere.',
+            $sessionId,
+            'black-forest-labs/flux-pro'
+        );
 
         session([
             'game_character' => $character->value,

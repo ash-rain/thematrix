@@ -20,7 +20,7 @@ use Laravel\Ai\Promptable;
 use Stringable;
 
 #[Provider('openrouter')]
-#[Model('qwen/qwen3-vl-30b-a3b-thinking')]
+#[Model('minimax/minimax-m2.5')]
 #[Temperature(0.8)]
 #[MaxTokens(2048)]
 class MatrixGameAgent implements Agent, Conversational, HasStructuredOutput, HasTools

@@ -4,10 +4,10 @@ namespace App\Livewire;
 
 use App\Ai\Agents\MatrixGameAgent;
 use App\Enums\Character;
+use App\Jobs\GenerateSceneImage;
 use Illuminate\Support\Facades\Cache;
 use Laravel\Ai\Exceptions\AiException;
 use Laravel\Ai\Exceptions\RateLimitedException;
-use App\Jobs\GenerateSceneImage;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -50,7 +50,7 @@ class GameBoard extends Component
         $this->inventory = session('game_inventory', []);
         $this->gameOver = session('game_status') === 'game_over' || $this->health <= 0;
 
-        $this->sceneImage = Cache::get('game_scene_image:' . session()->getId());
+        $this->sceneImage = Cache::get('game_scene_image:'.session()->getId());
 
         if ($this->turnCount === 1 && session()->has('game_conversation_id')) {
             $this->loadLatestTurn();
@@ -59,7 +59,7 @@ class GameBoard extends Component
 
     public function refreshImage(): void
     {
-        $path = Cache::get('game_scene_image:' . session()->getId());
+        $path = Cache::get('game_scene_image:'.session()->getId());
 
         if ($path) {
             $this->sceneImage = $path;
@@ -68,7 +68,7 @@ class GameBoard extends Component
 
     public function getTitle(): string
     {
-        return $this->characterName . ' — The Matrix: Terminal';
+        return $this->characterName.' — The Matrix: Terminal';
     }
 
     public function makeChoice(int $choiceIndex): void
@@ -99,8 +99,8 @@ class GameBoard extends Component
             $this->isLoading = false;
 
             return;
-        } catch (AiException) {
-            $this->errorMessage = 'A glitch in the Matrix. The connection was lost. Try again.';
+        } catch (AiException $e) {
+            $this->errorMessage = 'A glitch in the Matrix. '.$e->getMessage();
             $this->isLoading = false;
 
             return;
@@ -120,9 +120,9 @@ class GameBoard extends Component
 
         // Queue image generation with OpenRouter
         GenerateSceneImage::dispatch(
-            $response['scene_description'] . ' Digital art, cinematic, The Matrix movie style, green tint, dark cyberpunk noir atmosphere.',
+            $response['scene_description'].' Digital art, cinematic, The Matrix movie style, green tint, dark cyberpunk noir atmosphere.',
             $sessionId,
-            'black-forest-labs/flux-pro'
+            'bytedance-seed/seedream-4.5'
         );
 
         $newStatus = $this->gameOver ? 'game_over' : 'active';
@@ -139,7 +139,7 @@ class GameBoard extends Component
 
     public function newGame(): void
     {
-        Cache::forget('game_scene_image:' . session()->getId());
+        Cache::forget('game_scene_image:'.session()->getId());
 
         session()->forget([
             'game_character',
@@ -173,8 +173,8 @@ class GameBoard extends Component
             $this->errorMessage = 'The system is overloaded. Too many operatives in the Matrix. Try again in a moment.';
 
             return;
-        } catch (AiException) {
-            $this->errorMessage = 'A glitch in the Matrix. The connection was lost. Try again.';
+        } catch (AiException $e) {
+            $this->errorMessage = 'A glitch in the Matrix. '.$e->getMessage();
 
             return;
         }

@@ -4,10 +4,9 @@ namespace App\Livewire;
 
 use App\Ai\Agents\MatrixGameAgent;
 use App\Enums\Character;
-use Illuminate\Support\Facades\Cache;
+use App\Jobs\GenerateSceneImage;
 use Laravel\Ai\Exceptions\AiException;
 use Laravel\Ai\Exceptions\RateLimitedException;
-use App\Jobs\GenerateSceneImage;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -54,8 +53,8 @@ class CharacterSelect extends Component
             $this->isStarting = false;
 
             return;
-        } catch (AiException) {
-            $this->errorMessage = 'A glitch in the Matrix. The connection was lost. Try again.';
+        } catch (AiException $e) {
+            $this->errorMessage = 'A glitch in the Matrix. '.$e->getMessage();
             $this->isStarting = false;
 
             return;
@@ -65,9 +64,9 @@ class CharacterSelect extends Component
 
         // Queue image generation with OpenRouter
         GenerateSceneImage::dispatch(
-            $response['scene_description'] . ' Digital art, cinematic, The Matrix movie style, green tint, dark cyberpunk noir atmosphere.',
+            $response['scene_description'].' Digital art, cinematic, The Matrix movie style, green tint, dark cyberpunk noir atmosphere.',
             $sessionId,
-            'black-forest-labs/flux-pro'
+            'bytedance-seed/seedream-4.5'
         );
 
         session([

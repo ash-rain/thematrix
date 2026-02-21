@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 class OpenRouterImageService
 {
     protected string $apiKey;
+
     protected string $baseUrl = 'https://openrouter.ai/api/v1';
 
     public function __construct()
@@ -20,7 +21,7 @@ class OpenRouterImageService
      */
     public function generateImage(
         string $prompt,
-        string $model = 'black-forest-labs/flux-1.1-pro',
+        string $model = 'bytedance-seed/seedream-4.5',
         ?string $size = null
     ): array {
         try {
@@ -53,16 +54,25 @@ class OpenRouterImageService
                     'body' => $response->body(),
                 ]);
 
-                throw new \RuntimeException('Image generation failed: ' . $response->body());
+                throw new \RuntimeException('Image generation failed: '.$response->body());
             }
 
             $data = $response->json();
 
             // Extract the image URL from the response
-            $content = $data['choices'][0]['message']['content'] ?? null;
+            $content = $data['choices'][0]['message']['images'][0]['image_url']['url'] ?? null;
 
             if (! $content) {
                 throw new \RuntimeException('No image content in response');
+            }
+
+            // Handle base64 data URI (e.g. data:image/jpeg;base64,...)
+            if (str_starts_with($content, 'data:image/')) {
+                return [
+                    'url' => $content,
+                    'content' => $content,
+                    'usage' => $data['usage'] ?? null,
+                ];
             }
 
             // Parse the markdown image format that OpenRouter returns
@@ -96,13 +106,24 @@ class OpenRouterImageService
     }
 
     /**
-     * Download an image from a URL and store it
+     * Download an image from a URL (or decode a base64 data URI) and store it
      */
     public function downloadAndStore(string $url, string $disk = 'public', ?string $path = null): string
     {
-        $imageContent = Http::timeout(30)->get($url)->body();
+        if (str_starts_with($url, 'data:image/')) {
+            preg_match('/^data:image\/(\w+);base64,/', $url, $matches);
+            $extension = $matches[1] ?? 'png';
+            $imageContent = base64_decode(substr($url, strpos($url, ',') + 1), true);
 
-        $filename = $path ?? 'images/' . uniqid() . '.png';
+            if ($imageContent === false) {
+                throw new \RuntimeException('Failed to decode base64 image data');
+            }
+        } else {
+            $extension = 'png';
+            $imageContent = Http::timeout(30)->get($url)->body();
+        }
+
+        $filename = $path ?? 'images/'.uniqid().'.'.$extension;
 
         \Storage::disk($disk)->put($filename, $imageContent);
 

@@ -16,6 +16,7 @@ class GenerateSceneImage implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 3;
+
     public int $timeout = 180;
 
     /**
@@ -24,7 +25,7 @@ class GenerateSceneImage implements ShouldQueue
     public function __construct(
         public string $prompt,
         public string $sessionId,
-        public string $model = 'black-forest-labs/flux-pro'
+        public string $model = 'bytedance-seed/seedream-4.5'
     ) {}
 
     /**
